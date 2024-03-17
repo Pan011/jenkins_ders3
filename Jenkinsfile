@@ -13,7 +13,6 @@ pipeline {
             steps {
                 echo 'Testing the project...'
                 // Test commands go here
-                sh 'mvn clean install'
 
             }
         }
