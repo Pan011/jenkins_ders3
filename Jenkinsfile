@@ -2,31 +2,35 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
+        stage('Build') {
             steps {
-                echo 'Checking out code...'
-                // Checkout commands go here
+                echo 'Starting build process...'
+                // Basit komutlar
             }
         }
 
-        stage('Build') {
+        stage('Test') {
             steps {
-                echo 'Building...'
-                // Build commands go here
+                script {
+                    // script bloğu içinde karmaşık mantık
+                    def testsToRun = ['unit', 'integration', 'e2e']
+                    for (testType in testsToRun) {
+                        echo "Running ${testType} tests"
+                        // Test türüne göre koşullu mantık uygulama
+                        if (testType == 'e2e') {
+                            echo 'Setting up Selenium Grid for e2e tests'
+                            // Selenium Grid kurulum komutları
+                        }
+                        // Testleri çalıştırma komutları
+                    }
+                }
             }
         }
 
         stage('Deploy') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                    echo 'Deploying with secured credentials...'
-                    sh '''
-                    echo "Deploying as $USERNAME"
-                    # Use $USERNAME and $PASSWORD in your deploy commands
-                    # For example, to log in to a server:
-                    # sshpass -p $PASSWORD ssh $USERNAME@yourserver.com "deploy-command"
-                    '''
-                }
+                echo 'Deploying application...'
+                // Dağıtım komutları
             }
         }
     }
