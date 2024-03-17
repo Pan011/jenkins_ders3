@@ -1,44 +1,45 @@
 pipeline {
     agent any
-
-    stages {
-        stage('Build') {
-            steps {
-                echo 'Building the project...'
-                // Build commands go here
-            }
-        }
-
-        stage('Test') {
-            steps {
-                echo 'Testing the project...'
-                // Test commands go here
-
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                echo 'Deploying the project...'
-                // Deploy commands go here
-            }
-        }
+    tools {
+        maven 'maven-3.9.6'
     }
-
-    post {
-        success {
-            echo 'Pipeline completed successfully!'
-            // Başarılı olduğunda yapılacak işlemler (örneğin, bildirim gönderme)
+    parameters {
+        string(name: 'DOCKERHUB_REPO', defaultValue: 'pan011/jenkinsders3', description: 'Docker Hub repository for production')
+        string(name: 'TEST_DOCKERHUB_REPO', defaultValue: 'pan011/jenkinsders3test', description: 'Docker Hub repository for test')
+        string(name: 'VERSION', defaultValue: '1.0.0', description: 'Version of the project')
+        choice(name: 'MAJOR_VERSION', choices: ['1', '2', '3'], description: 'Major version number')
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
         }
-
-        failure {
-            echo 'Pipeline failed!'
-            // Hata olduğunda yapılacak işlemler (örneğin, hata analizi)
+        stage('Build and Push Test Image') {
+            steps {
+                script {
+                    def script = load 'script.groovy'
+                    script.buildAndPushImage("", params.TEST_DOCKERHUB_REPO, params.VERSION, env.BUILD_NUMBER.toInteger())
+                }
+            }
         }
-
-        always {
-            echo 'This will always run regardless of the result.'
-            // Her durumda yapılacak işlemler (örneğin, temizleme işlemleri)
+        stage('Manual Approval') {
+            steps {
+                input message: 'Approve deployment to production?', ok: 'Deploy'
+            }
+        }
+        stage('Build and Push Production Image') {
+            when {
+                expression {
+                    return params.MAJOR_VERSION == '1' // Örneğin, sadece MAJOR_VERSION 1 olduğunda prod'a deploy et
+                }
+            }
+            steps {
+                script {
+                    def script = load 'script.groovy'
+                    script.buildAndPushImage("prod", params.DOCKERHUB_REPO, params.VERSION, env.BUILD_NUMBER.toInteger())
+                }
+            }
         }
     }
 }
