@@ -1,41 +1,45 @@
 pipeline {
     agent any
 
-    tools {
-        // Jenkins yapılandırmasında tanımlı Maven sürümünü kullan
-        maven 'maven-3.9.6'
-    }
-
     stages {
-        stage('Checkout') {
-            steps {
-                echo 'Checking out source code...'
-                // Source code checkout steps
-            }
-        }
-
         stage('Build') {
             steps {
-                echo 'Building with Maven'
-                // Maven ile proje inşa et
-                sh 'mvn clean install'
+                echo 'Building the project...'
+                // Build commands go here
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Running tests'
-                // Maven ile test çalıştır
-                sh 'mvn test'
+                echo 'Testing the project...'
+                // Test commands go here
+                sh 'mvn clean install'
+
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploying application'
-                // Maven ile deploy işlemi
-                sh 'mvn deploy'
+                echo 'Deploying the project...'
+                // Deploy commands go here
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+            // Başarılı olduğunda yapılacak işlemler (örneğin, bildirim gönderme)
+        }
+
+        failure {
+            echo 'Pipeline failed!'
+            // Hata olduğunda yapılacak işlemler (örneğin, hata analizi)
+        }
+
+        always {
+            echo 'This will always run regardless of the result.'
+            // Her durumda yapılacak işlemler (örneğin, temizleme işlemleri)
         }
     }
 }
