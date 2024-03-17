@@ -1,32 +1,40 @@
 pipeline {
     agent any
 
+    tools {
+        // Jenkins yapılandırmasında tanımlı Maven sürümünü kullan
+        maven 'Maven_3_6_3'
+    }
+
     stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out source code...'
+                // Source code checkout steps
+            }
+        }
+
         stage('Build') {
             steps {
-                echo 'Building the project...'
-                // Build commands go here
+                echo 'Building with Maven'
+                // Maven ile proje inşa et
+                sh 'mvn clean install'
             }
         }
 
-        stage('Deploy to Staging') {
+        stage('Test') {
             steps {
-                echo 'Deploying to staging environment...'
-                // Staging deployment commands go here
+                echo 'Running tests'
+                // Maven ile test çalıştır
+                sh 'mvn test'
             }
         }
 
-        stage('Manual Approval') {
+        stage('Deploy') {
             steps {
-                // Kullanıcıdan devam etmek için onay iste
-                input message: 'Deploy to Production?', ok: 'Deploy'
-            }
-        }
-
-        stage('Deploy to Production') {
-            steps {
-                echo 'Deploying to production environment...'
-                // Production deployment commands go here
+                echo 'Deploying application'
+                // Maven ile deploy işlemi
+                sh 'mvn deploy'
             }
         }
     }
