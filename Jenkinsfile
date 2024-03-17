@@ -3,7 +3,7 @@ pipeline {
 
     tools {
         // Jenkins yapılandırmasında tanımlı Maven sürümünü kullan
-        maven 'Maven_3_6_3'
+        maven 'maven-3.9.6'
     }
 
     stages {
