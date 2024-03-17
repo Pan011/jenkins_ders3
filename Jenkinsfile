@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        // Kimlik bilgilerini ortam değişkenlerine atayarak kullanın
+        MY_SECRET = credentials('github-token')
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -18,15 +23,13 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                    echo 'Deploying with secured credentials...'
-                    sh '''
-                    echo "Deploying as $USERNAME"
-                    # Use $USERNAME and $PASSWORD in your deploy commands
-                    # For example, to log in to a server:
-                    # sshpass -p $PASSWORD ssh $USERNAME@yourserver.com "deploy-command"
-                    '''
-                }
+                echo 'Deploying...'
+                sh '''
+                # Use the credentials securely
+                echo "Deploying using ${MY_SECRET} user"
+                # Insert deployment commands here
+                # For example, using credentials to authenticate against a server
+                '''
             }
         }
     }
